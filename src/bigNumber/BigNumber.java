@@ -1,7 +1,9 @@
 package bigNumber;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 
 public class BigNumber {
@@ -14,7 +16,7 @@ public class BigNumber {
      */
     public BigNumber(String numbers) {
         numbers = numbers.trim();
-        if(!numbers.matches("\\d+"))
+        if(!numbers.matches("-?\\d+"))
             throw new IllegalArgumentException();
 
         String[] digits = numbers.split("");
@@ -41,24 +43,38 @@ public class BigNumber {
 
         int remainder = 0;
 
+        //Continue adding numbers while there still numbers to add.
         while(firstIndex >= 0 || secondaryIndex >= 0) {
 
+            //Total represent the sum of remainder and the 2 digits. The total sum should be in the range of 0..19
             int total = remainder;
 
+            //if there are still number in the first list that haven't been added, add to the total.
             if(firstIndex >= 0)
                 total += listOfDigits.get(firstIndex);
+            //if there are still number in the second list that haven't been added, add to the total.
             if(secondaryIndex >= 0)
                 total += secondaryList.get(secondaryIndex);
 
+            //The outcome
             if(total < 10)
                 number =  total + number;
             else
                 number = (total % 10) + number;
 
+
+            /*
+             * Get the remainder left by the addition of the current number. So we can utilize it on the next addition of digits.
+             */
             if(firstIndex >= 0 && secondaryIndex >= 0)
                 remainder  = addDigits(listOfDigits.get(firstIndex),secondaryList.get(secondaryIndex));
-            else
-                remainder = 0;
+            else {
+                if(firstIndex >= 0) {
+                    remainder = addDigits(listOfDigits.get(firstIndex),remainder);
+                }
+                else
+                    remainder = addDigits(secondaryList.get(secondaryIndex),remainder);
+            }
 
             firstIndex--;
             secondaryIndex--;

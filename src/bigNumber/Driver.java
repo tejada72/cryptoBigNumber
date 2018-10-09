@@ -5,12 +5,14 @@ package bigNumber;
  *   @author (sdb)
  *   @version (Sep 2012)
  */
+import java.util.Random;
 import java.util.Scanner;
 
 public class Driver
 {
     public static void main (String [] args)
     {
+        //runTest();
         Scanner scanner = new Scanner (System.in);
         BigNumber x,y;
 
@@ -35,6 +37,28 @@ public class Driver
             //System.out.println("Second % First: " + y.divide(x).getMod());
 
             line = scanner.nextLine();
+        }
+    }
+
+    /*
+     * Make 2 bigNumber and keep adding 13 to the original one. Good test case? I doubt it.
+     */
+    private static void runTest() {
+        BigNumber thirteen = new BigNumber("13");
+        BigNumber result = new BigNumber("0");
+
+        result = result.add(thirteen);
+
+        System.out.println("result: " + result);
+
+        int index = 0;
+
+        while(index < 59) {
+
+            result = result.add(thirteen);
+            System.out.println("Index: " + index + " : " + result);
+
+            index++;
         }
     }
 }
