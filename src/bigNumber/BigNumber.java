@@ -141,7 +141,7 @@ public class BigNumber {
     public List<Integer> getListOfDigits() {
         return listOfDigits;
     }
-    
+
     @Override
     /*
      * String representation of this BigNumber
