@@ -9,7 +9,9 @@ import java.util.ListIterator;
 public class BigNumber {
 
     private List<Integer>  listOfDigits = new LinkedList<>();
+    private List<Integer> negated = new LinkedList<>();
 
+    private int index;
 
     /*
      * Construct a big number from the given String. The string must only contains digits.
@@ -19,6 +21,18 @@ public class BigNumber {
         if(!numbers.matches("-?\\d+"))
             throw new IllegalArgumentException();
 
+
+    /*  Currently creates a sign digit, needs to negate if a negative number is entered
+        if (numbers.startsWith("-")) {
+            listOfDigits.add(9);
+            index = 1;
+        }
+
+        else{
+            listOfDigits.add(0);
+            index = 0;
+        }
+    */
         String[] digits = numbers.split("");
         int index = 0;
 
@@ -26,6 +40,7 @@ public class BigNumber {
             listOfDigits.add(Integer.parseInt(digits[index]));
             index++;
         }
+
     }
 
     /*
@@ -100,6 +115,21 @@ public class BigNumber {
 
         return 0;
     }
+
+    /* Does 9's complement, need to update for 10's complement
+    public void negate() {
+        for(Integer digit : listOfDigits) {
+            digit = 9 - digit;
+            negated.add(digit);
+        }
+        return;
+    }
+
+
+    public List getNegated(){
+        return negated;
+    }
+    */
 
     public BigNumber substract(BigNumber bigNumber) {
 
