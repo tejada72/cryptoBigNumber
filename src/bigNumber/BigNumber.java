@@ -82,7 +82,7 @@ public class BigNumber {
              * Get the remainder left by the addition of the current number. So we can utilize it on the next addition of digits.
              */
             if(firstIndex >= 0 && secondaryIndex >= 0)
-                remainder  = addDigits(listOfDigits.get(firstIndex),secondaryList.get(secondaryIndex));
+                remainder  = addDigits(listOfDigits.get(firstIndex),secondaryList.get(secondaryIndex), remainder);
             else {
                 if(firstIndex >= 0) {
                     remainder = addDigits(listOfDigits.get(firstIndex),remainder);
@@ -100,6 +100,20 @@ public class BigNumber {
         }
 
         return new BigNumber(number);
+    }
+
+    /*
+     * Add 2 integers with a carry and returns the remainder
+     *
+     * Restriction:
+     */
+    private int addDigits(Integer firstDigit, Integer secondDigit, Integer remainder) {
+        int total = firstDigit + secondDigit + remainder;
+
+        if(total > 9)
+            return total / 10;
+
+        return 0;
     }
 
     /*
