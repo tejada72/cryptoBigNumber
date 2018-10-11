@@ -1,14 +1,11 @@
 package bigNumber;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 
 public class BigNumber {
 
-    private List<Integer>  listOfDigits = new LinkedList<>();
+    private List<Integer>  listOfDigits = new ArrayList<>();
     private List<Integer> negated;
     private int sign;
 
@@ -40,7 +37,6 @@ public class BigNumber {
 
         String[] digits = numbers.split("");
 
-
         while(index < digits.length) {
             listOfDigits.add(Integer.parseInt(digits[index]));
             index++;
@@ -65,7 +61,7 @@ public class BigNumber {
      * Return BigNumber
      */
     public BigNumber add(BigNumber bigNumber) {
-        LinkedList<Integer> secondaryList = (LinkedList<Integer>) bigNumber.getListOfDigits();
+        ArrayList<Integer> secondaryList = (ArrayList<Integer>) bigNumber.getListOfDigits();
 
         String number = "";
 
@@ -148,7 +144,7 @@ public class BigNumber {
 
     // Perform 10's complement of the BigNumber and store it as negated
     private List negate() {
-        List<Integer> negatedList = new LinkedList<>();
+        List<Integer> negatedList = new ArrayList<>();
         /*
             Work from the lowest order digit up, copying 0's from the source number
             until the first non-zero is reached
@@ -177,6 +173,28 @@ public class BigNumber {
     }
 
     /*
+        Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
+     */
+    public void normalize() {
+
+
+        Integer firstDigit = listOfDigits.get(0);
+
+        int index = 1;
+        if(firstDigit < 5)
+            while (index < listOfDigits.size() && listOfDigits.get(index) == 0)
+                index++;
+        else
+            while (index < listOfDigits.size() && listOfDigits.get(index) == 9)
+                index++;
+
+        listOfDigits.removeAll(listOfDigits.subList(1, index));
+        listOfDigits.add(0,firstDigit);
+
+        System.out.println(this);
+    }
+
+    /*
         Returns the negated form of the BigNumber as a LinkedList<Integer>
      */
     public List<Integer> getNegated() {
@@ -184,8 +202,7 @@ public class BigNumber {
     }
 
     public BigNumber substract(BigNumber bigNumber) {
-
-
+        //return this.add(bigNumber.negate());
         return null;
     }
 
@@ -220,10 +237,18 @@ public class BigNumber {
      */
     public String toString() {
         StringBuilder str = new StringBuilder();
+        boolean leadingZeros = true;
 
-        for (Integer digit :
-                listOfDigits) {
-            str.append(digit);
+        int index = 1;
+        Integer digit = 0;
+        while(index < listOfDigits.size()) {
+            digit = listOfDigits.get(index);
+            if(!digit.equals(0) && leadingZeros)
+                leadingZeros = false;
+
+            if(!leadingZeros)
+                str.append(digit);
+            index++;
         }
 
         return str.toString();
