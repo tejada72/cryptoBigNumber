@@ -9,36 +9,52 @@ import java.util.ListIterator;
 public class BigNumber {
 
     private List<Integer>  listOfDigits = new LinkedList<>();
-    private List<Integer> negated = new LinkedList<>();
-
-    private int index;
+    private List<Integer> negated;
+    private int sign;
 
     /*
-     * Construct a big number from the given String. The string must only contains digits.
+     * Construct a big number from the given String. The string must only contains digits or be preceded by '-'.
      */
     public BigNumber(String numbers) {
+        int index;
         numbers = numbers.trim();
         if(!numbers.matches("-?\\d+"))
             throw new IllegalArgumentException();
 
 
-    /*  Currently creates a sign digit, needs to negate if a negative number is entered
+    /*  Creates a sign digit at the beginning of the Big Number
+    *   0 if positive
+    *   9 if negative.  Index = 1 to compensate for '-' in string
+    */
         if (numbers.startsWith("-")) {
             listOfDigits.add(9);
+            sign = 9;
             index = 1;
         }
 
         else{
             listOfDigits.add(0);
+            sign = 0;
             index = 0;
         }
-    */
+
         String[] digits = numbers.split("");
-        int index = 0;
+
 
         while(index < digits.length) {
             listOfDigits.add(Integer.parseInt(digits[index]));
             index++;
+        }
+
+        /* If the number entered was positive, store the negated form as usual
+
+         */
+        if (sign == 0){
+            negated = negate();
+        }
+        else if (sign == 9){
+            negated = listOfDigits;
+            listOfDigits = negate();
         }
 
     }
@@ -130,26 +146,68 @@ public class BigNumber {
         return 0;
     }
 
-    /* Does 9's complement, need to update for 10's complement
-    public void negate() {
-        for(Integer digit : listOfDigits) {
-            digit = 9 - digit;
-            negated.add(digit);
+    // Perform 10's complement of the BigNumber and store it as negated
+    private List negate() {
+        List<Integer> negatedList = new LinkedList<>();
+        /*
+            Work from the lowest order digit up, copying 0's from the source number
+            until the first non-zero is reached
+         */
+        int index = listOfDigits.size() - 1;
+        while (index > 0){
+            while (listOfDigits.get(index) == 0){
+                negatedList.add(0, 0);
+                index--;
+            }
+
+            /*
+                Upon the first non-zero digit, subtract that digit from 10
+                to simulate the addition of 1 at the end of radix complement
+             */
+            negatedList.add(0, 10-listOfDigits.get(index));
+            index--;
+
+            //Subtract all remaining digits from 9 to complete the radix complement
+            while (index >=0){
+                negatedList.add(0, 9-listOfDigits.get(index));
+                index--;
+            }
         }
-        return;
+        return negatedList;
     }
 
-
-    public List getNegated(){
+    /*
+        Returns the negated form of the BigNumber as a LinkedList<Integer>
+     */
+    public List<Integer> getNegated() {
         return negated;
     }
-    */
 
     public BigNumber substract(BigNumber bigNumber) {
 
 
         return null;
     }
+
+    /* Compares two BigNumbers for equality
+       Works well for normally entered values, but leading 0's will affect
+       determination.
+
+       Needs normalization function or scrubbing of leading zero's at instantiation.
+
+
+    public boolean equals(BigNumber compare){
+        if (!(this.getListOfDigits().size() == compare.getListOfDigits().size())){
+            return false;
+        }
+        for (int i = 0; i < this.getListOfDigits().size(); i++){
+            if (!(this.getListOfDigits().get(i) == compare.getListOfDigits().get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+    */
 
 
     public List<Integer> getListOfDigits() {
