@@ -1,15 +1,11 @@
 package bigNumber;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 
 public class BigNumber {
 
-    private List<Integer>  listOfDigits = new LinkedList<>();
-    private List<Integer> negated;
+    private List<Integer>  listOfDigits = new ArrayList<>();
     private int sign;
 
     /*
@@ -27,13 +23,11 @@ public class BigNumber {
     *   9 if negative.  Index = 1 to compensate for '-' in string
     */
         if (numbers.startsWith("-")) {
-            listOfDigits.add(9);
             sign = 9;
             index = 1;
         }
 
         else{
-            listOfDigits.add(0);
             sign = 0;
             index = 0;
         }
@@ -46,17 +40,9 @@ public class BigNumber {
             index++;
         }
 
-        /* If the number entered was positive, store the negated form as usual
-
-         */
-        if (sign == 0){
-            negated = negate();
+        if (sign == 9){
+            this.listOfDigits = negate().getListOfDigits();
         }
-        else if (sign == 9){
-            negated = listOfDigits;
-            listOfDigits = negate();
-        }
-
     }
 
     /*
@@ -65,11 +51,24 @@ public class BigNumber {
      * Return BigNumber
      */
     public BigNumber add(BigNumber bigNumber) {
-        LinkedList<Integer> secondaryList = (LinkedList<Integer>) bigNumber.getListOfDigits();
+        ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
+        ArrayList<Integer> secondaryList = (ArrayList<Integer>) bigNumber.getListOfDigits();
+
+        if (firstList.size() != secondaryList.size()){
+            if (firstList.size() > secondaryList.size()){
+                while (secondaryList.size() < firstList.size()){
+                    secondaryList.add(0, bigNumber.sign());
+                }
+            }
+            else
+                while (firstList.size() < secondaryList.size()){
+                    firstList.add(0, sign());
+                }
+        }
 
         String number = "";
 
-        int firstIndex = listOfDigits.size()-1;
+        int firstIndex = firstList.size()-1;
         int secondaryIndex = secondaryList.size()-1;
 
         int remainder = 0;
@@ -82,7 +81,7 @@ public class BigNumber {
 
             //if there are still number in the first list that haven't been added, add to the total.
             if(firstIndex >= 0)
-                total += listOfDigits.get(firstIndex);
+                total += firstList.get(firstIndex);
             //if there are still number in the second list that haven't been added, add to the total.
             if(secondaryIndex >= 0)
                 total += secondaryList.get(secondaryIndex);
@@ -98,10 +97,10 @@ public class BigNumber {
              * Get the remainder left by the addition of the current number. So we can utilize it on the next addition of digits.
              */
             if(firstIndex >= 0 && secondaryIndex >= 0)
-                remainder  = addDigits(listOfDigits.get(firstIndex),secondaryList.get(secondaryIndex), remainder);
+                remainder  = addDigits(firstList.get(firstIndex),secondaryList.get(secondaryIndex), remainder);
             else {
                 if(firstIndex >= 0) {
-                    remainder = addDigits(listOfDigits.get(firstIndex),remainder);
+                    remainder = addDigits(firstList.get(firstIndex),remainder);
                 }
                 else
                     remainder = addDigits(secondaryList.get(secondaryIndex),remainder);
@@ -147,46 +146,35 @@ public class BigNumber {
     }
 
     // Perform 10's complement of the BigNumber and store it as negated
-    private List negate() {
-        List<Integer> negatedList = new LinkedList<>();
-        /*
-            Work from the lowest order digit up, copying 0's from the source number
-            until the first non-zero is reached
-         */
-        int index = listOfDigits.size() - 1;
-        while (index > 0){
-            while (listOfDigits.get(index) == 0){
-                negatedList.add(0, 0);
-                index--;
-            }
-
-            /*
-                Upon the first non-zero digit, subtract that digit from 10
-                to simulate the addition of 1 at the end of radix complement
-             */
-            negatedList.add(0, 10-listOfDigits.get(index));
-            index--;
-
-            //Subtract all remaining digits from 9 to complete the radix complement
-            while (index >=0){
-                negatedList.add(0, 9-listOfDigits.get(index));
-                index--;
-            }
+    private BigNumber negate() {
+        StringBuilder sr = new StringBuilder();
+        for (Integer i: this.listOfDigits) {
+            sr.append(i);
         }
-        return negatedList;
+        String negated = sr.toString();
+        int index = negated.length() - 1;
+        String[] digits = negated.split("");
+        while (Integer.parseInt(digits[index]) == 0){
+            index--;
+        }
+
+        digits[index] = Integer.toString(10 - Integer.parseInt(digits[index]));
+        index--;
+
+        while (index >= 0){
+            digits[index] = Integer.toString(9 - Integer.parseInt(digits[index]));
+            index--;
+        }
+        sr = new StringBuilder();
+        for (String i: digits) {
+            sr.append(i);
+        }
+
+        return new BigNumber(sr.toString());
     }
 
-    /*
-        Returns the negated form of the BigNumber as a LinkedList<Integer>
-     */
-    public List<Integer> getNegated() {
-        return negated;
-    }
-
-    public BigNumber substract(BigNumber bigNumber) {
-
-
-        return null;
+    public BigNumber subtract(BigNumber bigNumber) {
+        return this.add(bigNumber.negate());
     }
 
     /* Compares two BigNumbers for equality
@@ -208,6 +196,10 @@ public class BigNumber {
         return true;
     }
     */
+
+    public int sign(){
+        return sign;
+    }
 
 
     public List<Integer> getListOfDigits() {
