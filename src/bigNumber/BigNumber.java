@@ -53,6 +53,8 @@ public class BigNumber {
             listOfDigits = negate();
         }
 
+        normalize();
+        System.out.println(this);
     }
 
     /*
@@ -176,22 +178,33 @@ public class BigNumber {
         Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
      */
     public void normalize() {
-
-
+        //Stores the first digit that represents the sign of this number
         Integer firstDigit = listOfDigits.get(0);
 
-        int index = 1;
+        //Skip the first element
+        Iterator<Integer> it = listOfDigits.iterator();
+        boolean stop = false;
+
+        //count how many leading 0 there are
         if(firstDigit < 5)
-            while (index < listOfDigits.size() && listOfDigits.get(index) == 0)
-                index++;
+            while (it.hasNext() && !stop) {
+                if(it.next() == 0)
+                    it.remove();
+                else
+                    stop = true;
+            }
+        //count how many leading 9 there are
         else
-            while (index < listOfDigits.size() && listOfDigits.get(index) == 9)
-                index++;
+            while (it.hasNext() && !stop) {
+                if (it.next() == 0)
+                    it.remove();
+                else
+                    stop = true;
+            }
 
-        listOfDigits.removeAll(listOfDigits.subList(1, index));
+
+        //add the firstDigit back to the list
         listOfDigits.add(0,firstDigit);
-
-        System.out.println(this);
     }
 
     /*
