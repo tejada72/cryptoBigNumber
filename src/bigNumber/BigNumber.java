@@ -2,7 +2,9 @@ package bigNumber;
 
 import java.util.*;
 
-
+/*
+    @author: Alex Tejada
+ */
 public class BigNumber {
 
     private List<Integer>  listOfDigits = new ArrayList<>();
@@ -18,7 +20,7 @@ public class BigNumber {
             throw new IllegalArgumentException();
 
 
-    /*  Creates a sign digit at the beginning of the Big Number
+    /*  Decide the sign digit at the beginning of the Big Number
     *   0 if positive
     *   9 if negative.  Index = 1 to compensate for '-' in string
     */
@@ -34,18 +36,41 @@ public class BigNumber {
 
         String[] digits = numbers.split("");
 
-
         while(index < digits.length) {
             listOfDigits.add(Integer.parseInt(digits[index]));
             index++;
         }
 
-        if (sign == 9){
+        /*
+            @author: Tyler Robinson
+            Stores the appropriate form of the entered number with a sign digit
+         */
+        if (numbers.startsWith("-")){
             this.listOfDigits = negate().getListOfDigits();
+            listOfDigits.add(0,9);
         }
+        else listOfDigits.add(0,0);
     }
 
     /*
+        @author: Tyler Robinson
+        Private constructor used by methods to avoid adding new sign digits
+     */
+    private BigNumber(String numbers, int num) {
+        int index = 0;
+        numbers = numbers.trim();
+        if(!numbers.matches("-?\\d+"))
+            throw new IllegalArgumentException();
+
+        String[] digits = numbers.split("");
+
+        while(index < digits.length) {
+            listOfDigits.add(Integer.parseInt(digits[index]));
+            index++;
+        }
+    }
+    /*
+     *@author: Alex Tejada
      * Adds a BigNumber to this BigNumber and return the resulting sum of both BigNumbers.
      *
      * Return BigNumber
@@ -57,14 +82,16 @@ public class BigNumber {
         if (firstList.size() != secondaryList.size()){
             if (firstList.size() > secondaryList.size()){
                 while (secondaryList.size() < firstList.size()){
-                    secondaryList.add(0, bigNumber.sign());
+                    secondaryList.add(0, bigNumber.sign);
                 }
             }
             else
                 while (firstList.size() < secondaryList.size()){
-                    firstList.add(0, sign());
+                    firstList.add(0, sign);
                 }
         }
+
+        int wordLength = firstList.size();
 
         String number = "";
 
@@ -113,11 +140,11 @@ public class BigNumber {
         if(remainder > 0) {
             number = remainder + number;
         }
-
-        return new BigNumber(number);
+        return new BigNumber(number, 1);
     }
 
     /*
+     *@author: Alex Tejada
      * Add 2 integers with a carry and returns the remainder
      *
      * Restriction:
@@ -132,6 +159,7 @@ public class BigNumber {
     }
 
     /*
+     *@author: Alex Tejada
      * Add 2 integers and returns the remainder
      *
      * Restriction:
@@ -145,8 +173,10 @@ public class BigNumber {
         return 0;
     }
 
-    // Perform 10's complement of the BigNumber and store it as negated
-    private BigNumber negate() {
+    /* Perform 10's complement of the BigNumber and store it as negated
+       @author: Tyler Robinson
+     */
+    public BigNumber negate() {
         StringBuilder sr = new StringBuilder();
         for (Integer i: this.listOfDigits) {
             sr.append(i);
@@ -170,20 +200,36 @@ public class BigNumber {
             sr.append(i);
         }
 
-        return new BigNumber(sr.toString());
+        return new BigNumber(sr.toString(), 1);
     }
 
+    /*
+        @author: Tyler Robinson
+     */
+    public BigNumber multiply(BigNumber bigNumber){
+        List<Integer> target = this.getListOfDigits();
+        List<Integer> multiplier = bigNumber.getListOfDigits();
+
+
+
+        for (int i = multiplier.size() - 1; i >= 0; i--){
+            for (int j = target.size() - 1; j >=0; j--){
+
+            }
+        }
+        return null;
+    }
+
+    /*
+        @author: Tyler Robinson
+     */
     public BigNumber subtract(BigNumber bigNumber) {
         return this.add(bigNumber.negate());
     }
 
     /* Compares two BigNumbers for equality
-       Works well for normally entered values, but leading 0's will affect
-       determination.
-
-       Needs normalization function or scrubbing of leading zero's at instantiation.
-
-
+    @author: Tyler Robinson
+     */
     public boolean equals(BigNumber compare){
         if (!(this.getListOfDigits().size() == compare.getListOfDigits().size())){
             return false;
@@ -195,10 +241,20 @@ public class BigNumber {
         }
         return true;
     }
-    */
 
+    /*
+        @author: Tyler Robinson
+     */
     public int sign(){
-        return sign;
+
+        if (this.equals(new BigNumber("0"))){
+            return 0;
+        }
+        if (sign == 9){
+            return -1;
+        }
+        else
+            return 1;
     }
 
 
@@ -208,6 +264,7 @@ public class BigNumber {
 
     @Override
     /*
+       @author: Alex Tejada
      * String representation of this BigNumber
      */
     public String toString() {

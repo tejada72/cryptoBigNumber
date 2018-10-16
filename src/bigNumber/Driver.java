@@ -28,6 +28,9 @@ public class Driver
 
             System.out.println(x.toString());
             System.out.println(y.toString());
+            System.out.println("First negated = " +x.negate().toString());
+            System.out.println("Second negated = " +y.negate().toString());
+
             System.out.println("Sum: " + x.add(y));
             System.out.println("Sum: " + y.add(x));
             System.out.println("First - Second: " + x.subtract(y));
