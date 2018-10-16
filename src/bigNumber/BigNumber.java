@@ -7,11 +7,13 @@ import java.util.*;
  */
 public class BigNumber {
 
-    private List<Integer>  listOfDigits = new ArrayList<>();
+    private List<Integer> listOfDigits = new ArrayList<>();
     private int sign;
 
     /*
      * Construct a big number from the given String. The string must only contains digits or be preceded by '-'.
+     *
+     * Authors: Alex Tejada &
      */
     public BigNumber(String numbers) {
         int index;
@@ -107,10 +109,10 @@ public class BigNumber {
             int total = remainder;
 
             //if there are still number in the first list that haven't been added, add to the total.
-            if(firstIndex >= 0)
+            if (firstIndex >= 0)
                 total += firstList.get(firstIndex);
             //if there are still number in the second list that haven't been added, add to the total.
-            if(secondaryIndex >= 0)
+            if (secondaryIndex >= 0)
                 total += secondaryList.get(secondaryIndex);
 
             //The outcome
@@ -123,39 +125,115 @@ public class BigNumber {
             /*
              * Get the remainder left by the addition of the current number. So we can utilize it on the next addition of digits.
              */
-            if(firstIndex >= 0 && secondaryIndex >= 0)
-                remainder  = addDigits(firstList.get(firstIndex),secondaryList.get(secondaryIndex), remainder);
+            if (firstIndex >= 0 && secondaryIndex >= 0)
+                remainder = addDigits(firstList.get(firstIndex), secondaryList.get(secondaryIndex), remainder)[1];
             else {
-                if(firstIndex >= 0) {
-                    remainder = addDigits(firstList.get(firstIndex),remainder);
-                }
-                else
-                    remainder = addDigits(secondaryList.get(secondaryIndex),remainder);
+                if (firstIndex >= 0) {
+                    remainder = addDigits(firstList.get(firstIndex), remainder);
+                } else
+                    remainder = addDigits(secondaryList.get(secondaryIndex), remainder);
             }
 
             firstIndex--;
             secondaryIndex--;
         }
 
-        if(remainder > 0) {
+        if (remainder > 0) {
             number = remainder + number;
         }
         return new BigNumber(number, 1);
+    }
+
+    private void createAndChangeList(String numbers) {
+        String[] digits = numbers.split("");
+
+        listOfDigits = new ArrayList<>();
+
+
+        int index = 0;
+
+        while (index < digits.length) {
+            listOfDigits.add(Integer.parseInt(digits[index]));
+            index++;
+        }
+    }
+
+    public BigNumber add2(BigNumber secondNumber) {
+        ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
+        ArrayList<Integer> secondaryList = (ArrayList<Integer>) secondNumber.getListOfDigits();
+
+        if (firstList.size() != secondaryList.size()) {
+            if (firstList.size() > secondaryList.size()) {
+                if (secondNumber.sign() < 5)
+                    while (secondaryList.size() < firstList.size()) {
+                        secondaryList.add(0, 0);
+                    }
+                else
+                    while (secondaryList.size() < firstList.size()) {
+                        secondaryList.add(0, 9);
+                    }
+            } else {
+                if (this.sign < 5) {
+                    while (firstList.size() < secondaryList.size()) {
+                        firstList.add(0, 0);
+                    }
+                } else {
+                    while (firstList.size() < secondaryList.size()) {
+                        firstList.add(0, 9);
+                    }
+                }
+            }
+        }
+
+        int index = this.getListOfDigits().size()-1;
+        int remainder = 0;
+        int[] sum = null;
+        StringBuilder str = new StringBuilder();
+
+        while(index >= 0) {
+            sum = addDigits(firstList.get(index),secondaryList.get(index),remainder);
+            str.insert(0,sum[0] % 10);
+            remainder = sum[1];
+            index--;
+        }
+
+        if(remainder > 0) {
+            str.insert(0,remainder);
+        }
+
+        if(this.sign()< 5 && secondNumber.sign() < 5) {
+            //Both numbers are positives and return a positive.
+        }
+        else if((this.sign() < 5 && secondNumber.sign() > 4) || (this.sign() > 4) && secondNumber.sign() < 5) {
+            if(Integer.valueOf(((Character) str.charAt(0)).toString()) < 5) {
+                str = str.delete(0,1);
+            }
+            else {
+                return new BigNumber("-" + str.toString());
+            }
+        }
+        else {
+           if(Integer.valueOf(((Character) str.charAt(0)).toString()) < 5) {
+                str = str.delete(0,1);
+            }
+        }
+
+        return new BigNumber(str.toString());
     }
 
     /*
      *@author: Alex Tejada
      * Add 2 integers with a carry and returns the remainder
      *
-     * Restriction:
+     * returns an array with index 0 being the result from the addition mod 10 and index 1 being the remainder
      */
-    private int addDigits(Integer firstDigit, Integer secondDigit, Integer remainder) {
+    private int[] addDigits(Integer firstDigit, Integer secondDigit, Integer remainder) {
         int total = firstDigit + secondDigit + remainder;
 
-        if(total > 9)
-            return total / 10;
+        if (total > 9)
+            return new int[]{total % 10,total / 10};
 
-        return 0;
+        return new int[]{total % 10,0};
     }
 
     /*
@@ -167,7 +245,7 @@ public class BigNumber {
     private int addDigits(Integer firstDigit, Integer secondDigit) {
         int total = firstDigit + secondDigit;
 
-        if(total > 9)
+        if (total > 9)
             return total / 10;
 
         return 0;
@@ -199,38 +277,52 @@ public class BigNumber {
         for (String i: digits) {
             sr.append(i);
         }
-
-        return new BigNumber(sr.toString(), 1);
+        return new BigNumber(sr.toString());
     }
 
     /*
-        @author: Tyler Robinson
+        Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
      */
-    public BigNumber multiply(BigNumber bigNumber){
-        List<Integer> target = this.getListOfDigits();
-        List<Integer> multiplier = bigNumber.getListOfDigits();
+    public void normalize() {
+        //Stores the first digit that represents the getSign of this number
+        Integer firstDigit = listOfDigits.get(0);
 
+        //Skip the first element
+        Iterator<Integer> it = listOfDigits.iterator();
+        boolean stop = false;
 
-
-        for (int i = multiplier.size() - 1; i >= 0; i--){
-            for (int j = target.size() - 1; j >=0; j--){
-
+        //count how many leading 0 there are
+        if(sign() < 5)
+            while (it.hasNext() && !stop) {
+                if(it.next() == 0)
+                    it.remove();
+                else
+                    stop = true;
             }
-        }
-        return null;
+            //count how many leading 9 there are
+        else
+            while (it.hasNext() && !stop) {
+                if (it.next() == 0)
+                    it.remove();
+                else
+                    stop = true;
+            }
+
+
+        //add the firstDigit back to the list
+        listOfDigits.add(0,firstDigit);
     }
 
-    /*
-        @author: Tyler Robinson
-     */
     public BigNumber subtract(BigNumber bigNumber) {
-        return this.add(bigNumber.negate());
+        return this.add2(bigNumber.negate());
     }
 
     /* Compares two BigNumbers for equality
     @author: Tyler Robinson
      */
     public boolean equals(BigNumber compare){
+        this.normalize();
+        compare.normalize();
         if (!(this.getListOfDigits().size() == compare.getListOfDigits().size())){
             return false;
         }
@@ -269,12 +361,40 @@ public class BigNumber {
      */
     public String toString() {
         StringBuilder str = new StringBuilder();
+        boolean leadingGarbage = true;
 
-        for (Integer digit :
-                listOfDigits) {
-            str.append(digit);
+        int index = 0;
+        Integer digit = 0;
+        while(index < listOfDigits.size()) {
+            digit = listOfDigits.get(index);
+            if(this.sign() < 5) {
+                if(!digit.equals(0) && leadingGarbage)
+                    leadingGarbage = false;
+            }
+            else {
+                if(!digit.equals(9) && leadingGarbage) {
+                    str.insert(0,"-");
+                    leadingGarbage = false;
+                }
+
+            }
+
+            if(!leadingGarbage)
+                str.append(digit);
+            index++;
         }
 
         return str.toString();
+    }
+
+
+    public int compareTo(BigNumber bigNumber) {
+        if(this.getListOfDigits().get(0) < 5 && bigNumber.getListOfDigits().get(0) > 4) {
+            return 1;
+        }
+        else if(bigNumber.getListOfDigits().get(0)< 5 && this.getListOfDigits().get(0) > 4) {
+            return -1;
+        }
+        return 0;
     }
 }
