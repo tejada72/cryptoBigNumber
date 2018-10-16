@@ -77,6 +77,7 @@ public class BigNumber {
      *
      * Return BigNumber
      */
+
     public BigNumber add(BigNumber bigNumber) {
         ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
         ArrayList<Integer> secondaryList = (ArrayList<Integer>) bigNumber.getListOfDigits();
