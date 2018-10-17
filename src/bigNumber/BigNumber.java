@@ -71,84 +71,11 @@ public class BigNumber {
             index++;
         }
     }
-    /*
-     *@author: Alex Tejada
-     * Adds a BigNumber to this BigNumber and return the resulting sum of both BigNumbers.
-     *
-     * Return BigNumber
-     */
-
-    public BigNumber add(BigNumber bigNumber) {
-        ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
-        ArrayList<Integer> secondaryList = (ArrayList<Integer>) bigNumber.getListOfDigits();
-
-        if (firstList.size() != secondaryList.size()){
-            if (firstList.size() > secondaryList.size()){
-                while (secondaryList.size() < firstList.size()){
-                    secondaryList.add(0, bigNumber.sign);
-                }
-            }
-            else
-                while (firstList.size() < secondaryList.size()){
-                    firstList.add(0, sign);
-                }
-        }
-
-        int wordLength = firstList.size();
-
-        String number = "";
-
-        int firstIndex = firstList.size()-1;
-        int secondaryIndex = secondaryList.size()-1;
-
-        int remainder = 0;
-
-        //Continue adding numbers while there still numbers to add.
-        while(firstIndex >= 0 || secondaryIndex >= 0) {
-
-            //Total represent the sum of remainder and the 2 digits. The total sum should be in the range of 0..19
-            int total = remainder;
-
-            //if there are still number in the first list that haven't been added, add to the total.
-            if (firstIndex >= 0)
-                total += firstList.get(firstIndex);
-            //if there are still number in the second list that haven't been added, add to the total.
-            if (secondaryIndex >= 0)
-                total += secondaryList.get(secondaryIndex);
-
-            //The outcome
-            if(total < 10)
-                number =  total + number;
-            else
-                number = (total % 10) + number;
-
-
-            /*
-             * Get the remainder left by the addition of the current number. So we can utilize it on the next addition of digits.
-             */
-            if (firstIndex >= 0 && secondaryIndex >= 0)
-                remainder = addDigits(firstList.get(firstIndex), secondaryList.get(secondaryIndex), remainder)[1];
-            else {
-                if (firstIndex >= 0) {
-                    remainder = addDigits(firstList.get(firstIndex), remainder);
-                } else
-                    remainder = addDigits(secondaryList.get(secondaryIndex), remainder);
-            }
-
-            firstIndex--;
-            secondaryIndex--;
-        }
-
-        if (remainder > 0) {
-            number = remainder + number;
-        }
-        return new BigNumber(number, 1);
-    }
 
     /*
         @author Alex Tejada
      */
-    public BigNumber add2(BigNumber secondNumber) {
+    public BigNumber add(BigNumber secondNumber) {
         ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
         ArrayList<Integer> secondaryList = (ArrayList<Integer>) secondNumber.getListOfDigits();
 
@@ -283,7 +210,7 @@ public class BigNumber {
         boolean stop = false;
 
         //count how many leading 0 there are
-        if(sign() < 5)
+        if(listOfDigits.get(0) < 5)
             while (it.hasNext() && !stop) {
                 if(it.next() == 0)
                     it.remove();
@@ -308,7 +235,7 @@ public class BigNumber {
         @author Alex Tejada
      */
     public BigNumber subtract(BigNumber bigNumber) {
-        return this.add2(bigNumber.negate());
+        return this.add(bigNumber.negate());
     }
 
     /* Compares two BigNumbers for equality

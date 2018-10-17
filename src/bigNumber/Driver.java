@@ -5,7 +5,6 @@ package bigNumber;
  *   @author (sdb)
  *   @version (Sep 2012)
  */
-import java.util.Random;
 import java.util.Scanner;
 
 public class Driver
@@ -27,8 +26,8 @@ public class Driver
 
             System.out.println("X: " + x.toString());
             System.out.println("Y: " + y.toString());
-            System.out.println("Sum: X + Y = " + x.add2(y));
-            System.out.println("Sum: Y + X = " + y.add2(x));
+            System.out.println("Sum: X + Y = " + x.add(y));
+            System.out.println("Sum: Y + X = " + y.add(x));
             //System.out.println("First - Second: " + x.subtract(y));
             //System.out.println("Second - First: " + y.subtract(x));
             //System.out.println("Product: " + x.multiply(y));
@@ -37,7 +36,7 @@ public class Driver
             //System.out.println("Second / First: " + y.divide(x).getQuotient());
             //System.out.println("First % Second: " + x.divide(y).getMod());
             //System.out.println("Second % First: " + y.divide(x).getMod());
-            System.out.println("X == Y: " + x.equals(new BigNumber("10").add2(new BigNumber("5"))));
+            System.out.println("X == Y: " + x.equals(new BigNumber("10").add(new BigNumber("5"))));
 
             line = scanner.nextLine();
         }
