@@ -3,7 +3,7 @@ package bigNumber;
 import java.util.*;
 
 /*
-    @author: Alex Tejada
+    @author: Alex Tejada & Tyler Robinson
  */
 public class BigNumber {
 
@@ -13,7 +13,7 @@ public class BigNumber {
     /*
      * Construct a big number from the given String. The string must only contains digits or be preceded by '-'.
      *
-     * Authors: Alex Tejada &
+     * Authors: Alex Tejada
      */
     public BigNumber(String numbers) {
         int index;
@@ -145,20 +145,9 @@ public class BigNumber {
         return new BigNumber(number, 1);
     }
 
-    private void createAndChangeList(String numbers) {
-        String[] digits = numbers.split("");
-
-        listOfDigits = new ArrayList<>();
-
-
-        int index = 0;
-
-        while (index < digits.length) {
-            listOfDigits.add(Integer.parseInt(digits[index]));
-            index++;
-        }
-    }
-
+    /*
+        @author Alex Tejada
+     */
     public BigNumber add2(BigNumber secondNumber) {
         ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
         ArrayList<Integer> secondaryList = (ArrayList<Integer>) secondNumber.getListOfDigits();
@@ -282,6 +271,7 @@ public class BigNumber {
     }
 
     /*
+        @author Alex Tejada
         Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
      */
     public void normalize() {
@@ -314,12 +304,15 @@ public class BigNumber {
         listOfDigits.add(0,firstDigit);
     }
 
+    /*
+        @author Alex Tejada
+     */
     public BigNumber subtract(BigNumber bigNumber) {
         return this.add2(bigNumber.negate());
     }
 
     /* Compares two BigNumbers for equality
-    @author: Tyler Robinson
+        @author: Tyler Robinson
      */
     public boolean equals(BigNumber compare){
         this.normalize();
@@ -351,6 +344,9 @@ public class BigNumber {
     }
 
 
+    /*
+        @author Alex Tejada
+     */
     public List<Integer> getListOfDigits() {
         return listOfDigits;
     }
@@ -389,13 +385,4 @@ public class BigNumber {
     }
 
 
-    public int compareTo(BigNumber bigNumber) {
-        if(this.getListOfDigits().get(0) < 5 && bigNumber.getListOfDigits().get(0) > 4) {
-            return 1;
-        }
-        else if(bigNumber.getListOfDigits().get(0)< 5 && this.getListOfDigits().get(0) > 4) {
-            return -1;
-        }
-        return 0;
-    }
 }
