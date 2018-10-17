@@ -16,7 +16,7 @@ public class BigNumber {
      * Authors: Alex Tejada & Tyler Robinson
      */
     public BigNumber(String numbers) {
-        int index;
+        int index = 0;
         numbers = numbers.trim();
         if(!numbers.matches("-?\\d+"))
             throw new IllegalArgumentException();
@@ -28,12 +28,11 @@ public class BigNumber {
     */
         if (numbers.startsWith("-")) {
             sign = 9;
-            index = 1;
+            numbers = numbers.replace("-","");
         }
 
         else{
             sign = 0;
-            index = 0;
         }
 
         String[] digits = numbers.split("");
@@ -41,6 +40,7 @@ public class BigNumber {
         while(index < digits.length) {
             listOfDigits.add(Integer.parseInt(digits[index]));
             index++;
+            System.out.println("Index end: "+ index);
         }
 
         /*
@@ -198,11 +198,7 @@ public class BigNumber {
     }
 
     /*
-<<<<<<< HEAD
         @author Alex Tejada
-=======
-        @author: Alex Tejada
->>>>>>> master
         Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
      */
     public void normalize() {
