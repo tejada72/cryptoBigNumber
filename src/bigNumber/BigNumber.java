@@ -13,7 +13,7 @@ public class BigNumber {
     /*
      * Construct a big number from the given String. The string must only contains digits or be preceded by '-'.
      *
-     * Authors: Alex Tejada
+     * Authors: Alex Tejada & Tyler Robinson
      */
     public BigNumber(String numbers) {
         int index;
@@ -198,7 +198,11 @@ public class BigNumber {
     }
 
     /*
+<<<<<<< HEAD
         @author Alex Tejada
+=======
+        @author: Alex Tejada
+>>>>>>> master
         Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
      */
     public void normalize() {
@@ -232,8 +236,8 @@ public class BigNumber {
     }
 
     /*
-        @author Alex Tejada
-     */
+        @author: Tyler Robinson
+    */
     public BigNumber subtract(BigNumber bigNumber) {
         return this.add(bigNumber.negate());
     }
@@ -310,6 +314,5 @@ public class BigNumber {
 
         return str.toString();
     }
-
-
 }
+
