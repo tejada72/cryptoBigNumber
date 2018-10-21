@@ -400,6 +400,30 @@ public class BigNumber {
     }
 
     /**
+     * Divide a BigNumber from this BigNumber
+     *
+     * @param denominator BigNumber to be use as the denominator
+     * @return Pair containing the quotient and remainder
+     */
+    public Pair divide(BigNumber denominator) {
+        BigNumber numerator = this;
+        BigNumber quotient;
+        BigNumber remaider;
+
+        int count = 0;
+
+        while(numerator.compareTo(denominator) > 0) {
+            numerator = numerator.subtract(denominator);
+            count++;
+        }
+
+        quotient = new BigNumber("" + count);
+        remaider = numerator;
+
+        return new Pair(quotient,remaider);
+    }
+
+    /**
      * The String representation of the BigNumber
      * @return String The String representation of this BigNumber
      * @author Alex Tejada
