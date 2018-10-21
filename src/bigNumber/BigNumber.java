@@ -380,11 +380,23 @@ public class BigNumber {
                 return value;
             }
         }
-        //If the signs of both numbers match, carry does not matter
-        else{
+        //Signs of the numbers match
+
+        //Check if the numbers are positive
+        //If yes, prepend the final remainder to the result, normalize and return
+        else if (this.sign() == 1){
+            result = remainder + result;
             value = new BigNumber(result, this.sign());
             value.normalize();
             return value;
+        }
+        //Both numbers are negative
+        //Prepend the final remainder to the result, normalize and return the negated result
+        else {
+            result = remainder + result;
+            value = new BigNumber(result, 1);
+            value.normalize();
+            return value.negate();
         }
     }
 
