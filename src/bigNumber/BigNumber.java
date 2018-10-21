@@ -3,7 +3,7 @@ package bigNumber;
 import java.util.*;
 
 
-public class BigNumber implements Comparable<BigNumber>{
+public class BigNumber {
 
     private List<Integer> listOfDigits = new ArrayList<>();
     private int sign;
@@ -11,7 +11,7 @@ public class BigNumber implements Comparable<BigNumber>{
     /*
      * Construct a big number from the given String. The string must only contains digits or be preceded by '-'.
      *
-     * Authors: Alex Tejada &
+     * Authors: Alex Tejada & Tyler Robison
      */
     public BigNumber(String numbers) {
         boolean negate = false;
@@ -25,7 +25,7 @@ public class BigNumber implements Comparable<BigNumber>{
         }
 
         //Remove garbage 0's if user decided to be funny
-        while(Integer.valueOf(((Character) numbers.charAt(0)).toString()) == 0 && numbers.length() > 0) {
+        while(Integer.valueOf(((Character) numbers.charAt(0)).toString()) == 0 && numbers.length() > 1) {
             numbers = numbers.subSequence(1,numbers.length()).toString();
         }
 
@@ -33,107 +33,34 @@ public class BigNumber implements Comparable<BigNumber>{
             numbers = "0" + numbers;
         }
 
-        createAndChangeList(numbers);
+        //String[] digits = numbers.split("");
+
+        initiateList(numbers);
 
         if (negate) {
-            negate();
-            sign = listOfDigits.get(0);
+            listOfDigits = negate().listOfDigits;
         }
     }
 
-    /*
-     * Adds a BigNumber to this BigNumber and return the resulting sum of both BigNumbers.
-     *
-     * Return BigNumber
-     */
-
-
-    public BigNumber add1(BigNumber bigNumber) {
-        ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
-        ArrayList<Integer> secondaryList = (ArrayList<Integer>) bigNumber.getListOfDigits();
-
-        if (firstList.size() != secondaryList.size()) {
-            if (firstList.size() > secondaryList.size()) {
-                if(bigNumber.sign >= 0)
-                    while (secondaryList.size() < firstList.size()) {
-                        secondaryList.add(0, bigNumber.getSign());
-                    }
-                else
-                    while (secondaryList.size() < firstList.size()) {
-                        secondaryList.add(9, bigNumber.getSign());
-                    }
-            } else {
-                if(this.sign >= 0) {
-                    while (firstList.size() < secondaryList.size()) {
-                        firstList.add(0, getSign());
-                    }
-                }
-                else {
-                    while (firstList.size() < secondaryList.size()) {
-                        firstList.add(9, getSign());
-                    }
-                }
-
-            }
-
-        }
-
-
-        String number = "";
-
-        int firstIndex = firstList.size() - 1;
-        int secondaryIndex = secondaryList.size() - 1;
-
-        int remainder = 0;
-
-        //Continue adding numbers while there still numbers to add.
-        while (firstIndex >= 0 || secondaryIndex >= 0) {
-
-            //Total represent the sum of remainder and the 2 digits. The total sum should be in the range of 0..19
-            int total = remainder;
-
-            //if there are still number in the first list that haven't been added, add to the total.
-            if (firstIndex >= 0)
-                total += firstList.get(firstIndex);
-            //if there are still number in the second list that haven't been added, add to the total.
-            if (secondaryIndex >= 0)
-                total += secondaryList.get(secondaryIndex);
-
-            //The outcome
-            if (total < 10)
-                number = total + number;
-            else
-                number = (total % 10) + number;
-
-
-            /*
-             * Get the remainder left by the addition of the current number. So we can utilize it on the next addition of digits.
-             */
-            if (firstIndex >= 0 && secondaryIndex >= 0)
-                remainder = addDigits(firstList.get(firstIndex), secondaryList.get(secondaryIndex), remainder)[1];
-            else {
-                if (firstIndex >= 0) {
-                    remainder = addDigits(firstList.get(firstIndex), remainder);
-                } else
-                    remainder = addDigits(secondaryList.get(secondaryIndex), remainder);
-            }
-
-            firstIndex--;
-            secondaryIndex--;
-        }
-
-        if (remainder > 0) {
-            number = remainder + number;
-        }
-
-        return new BigNumber(number);
+    private BigNumber(String numbers, boolean negated) {
+        initiateList(numbers);
     }
 
-    private void createAndChangeList(String numbers) {
+    private BigNumber(List<Integer> list) {
+        StringBuilder builder = new StringBuilder();
+
+        for (Integer number: list) {
+            builder.append(number);
+        }
+
+        initiateList(builder.toString());
+    }
+
+
+    private void initiateList(String numbers) {
         String[] digits = numbers.split("");
 
         listOfDigits = new ArrayList<>();
-
 
         int index = 0;
 
@@ -141,9 +68,11 @@ public class BigNumber implements Comparable<BigNumber>{
             listOfDigits.add(Integer.parseInt(digits[index]));
             index++;
         }
+
+        sign = listOfDigits.get(0);
     }
 
-    public BigNumber add2(BigNumber secondNumber) {
+    public BigNumber add(BigNumber secondNumber) {
         ArrayList<Integer> firstList = (ArrayList<Integer>) this.getListOfDigits();
         ArrayList<Integer> secondaryList = (ArrayList<Integer>) secondNumber.getListOfDigits();
 
@@ -198,7 +127,7 @@ public class BigNumber implements Comparable<BigNumber>{
             }
         }
         else {
-           if(Integer.valueOf(((Character) str.charAt(0)).toString()) < 5) {
+            if(Integer.valueOf(((Character) str.charAt(0)).toString()) < 5) {
                 str = str.delete(0,1);
             }
         }
@@ -260,19 +189,20 @@ public class BigNumber implements Comparable<BigNumber>{
         }
 
         //System.out.println("Negated number: " + sr.toString());
-        createAndChangeList(sr.toString());
-        return this;
+        sign = Character.digit(sr.charAt(0),10);
+        return new BigNumber(sr.toString(),true);
     }
 
     /*
-        Mutates this bigNumber into a bigNumber without any extra digit that don't have meaning.
+        Return this bigNumber as bigNumber without any extra digit that don't have meaning.
      */
-    public void normalize() {
+    public BigNumber normalize() {
+        List<Integer> list = listOfDigits.subList(0,listOfDigits.size());
         //Stores the first digit that represents the getSign of this number
-        Integer firstDigit = listOfDigits.get(0);
+        Integer firstDigit = list.get(0);
 
         //Skip the first element
-        Iterator<Integer> it = listOfDigits.iterator();
+        Iterator<Integer> it = list.iterator();
         boolean stop = false;
 
         //count how many leading 0 there are
@@ -294,13 +224,17 @@ public class BigNumber implements Comparable<BigNumber>{
 
 
         //add the firstDigit back to the list
-        listOfDigits.add(0,firstDigit);
+        list.add(0,firstDigit);
+        return new BigNumber(list);
     }
 
     public BigNumber subtract(BigNumber bigNumber) {
+        //if(getSign() > 4 && bigNumber.getSign() > 4) {
+        //    return this.negate().subtract(bigNumber.negate()).negate();
+       // }
         if(bigNumber.getSign() < 5)
             bigNumber.negate();
-        return this.add2(bigNumber);
+        return this.add(bigNumber);
     }
 
     /* Compares two BigNumbers for equality
@@ -363,16 +297,5 @@ public class BigNumber implements Comparable<BigNumber>{
         }
 
         return str.toString();
-    }
-
-    @Override
-    public int compareTo(BigNumber bigNumber) {
-        if(this.getListOfDigits().get(0) < 5 && bigNumber.getListOfDigits().get(0) > 4) {
-            return 1;
-        }
-        else if(bigNumber.getListOfDigits().get(0)< 5 && this.getListOfDigits().get(0) > 4) {
-            return -1;
-        }
-        return 0;
     }
 }
