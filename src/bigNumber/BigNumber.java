@@ -557,6 +557,11 @@ public class BigNumber {
         return new Pair(quotient, remainder);
     }
 
+    /**
+     * Returns a single factor of a BigNumber
+     *
+     * @return a factor of this BigNumber
+     */
     public BigNumber factor() {
         BigNumber x = TWO;
         BigNumber y = TWO;
@@ -594,6 +599,11 @@ public class BigNumber {
         return result;
     }
 
+    /**
+     * Provides a list of all the prime factors for this BigNumber
+     *
+     * @return a list of prime factors of this BigNumber
+     */
     /*
     public List<BigNumber> factor() {
         ArrayList<BigNumber> result = new ArrayList<>();
@@ -645,40 +655,6 @@ public class BigNumber {
         */
     }
 
-    /**
-     * Provides a list of all the prime factors for this BigNumber
-     *
-     * @return a list of prime factors of this BigNumber
-     */
-    /*
-    public List<BigNumber> factor() {
-        ArrayList<BigNumber> result = new ArrayList<>();
-        BigNumber numerator = this;
-        BigNumber denominator = TWO;
-        Pair divisionPair;
-        BigNumber halfOfThis = this.divide(TWO).getQuotient();
-
-        boolean searching = true;
-
-        while(searching && denominator.compareTo(halfOfThis) < 0) {
-            divisionPair = numerator.divide(denominator);
-            if(divisionPair.getMod().equals(ZERO)) {
-                result.add(denominator);
-                numerator = divisionPair.getQuotient();
-                if(numerator.equals(ONE))
-                    searching = false;
-            }
-            else {
-                if(denominator.equals(TWO))
-                    denominator = denominator.add(ONE);
-                else
-                    denominator = denominator.add(TWO);
-            }
-        }
-
-        return result;
-    }
-    */
 
     public BigNumber sqrt() {
 
