@@ -29,8 +29,8 @@ public class Driver
             System.out.println("Sum: Y + X = " + y.add(x));
             System.out.println("First - Second: X - Y = " + x.subtract(y));
             System.out.println("Second - First: Y - X = " + y.subtract(x));
-            //System.out.println("Product: " + x.multiply(y));
-            //System.out.println("Product: " + y.multiply(x));
+            System.out.println("Product: " + x.multiply(y));
+            System.out.println("Product: " + y.multiply(x));
             System.out.println("First / Second: X / Y = " + x.divide(y).getQuotient());
             System.out.println("Second / First: Y / X = " + y.divide(x).getQuotient());
             System.out.println("First % Second: X % Y = " + x.divide(y).getMod());
