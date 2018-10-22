@@ -1,5 +1,6 @@
 package bigNumber;
 
+
 import java.util.*;
 
 /**
@@ -17,6 +18,9 @@ public class BigNumber {
 
     //The Constant BigNumber zero.
     private static final BigNumber ZERO = new BigNumber("00", 0);
+
+    //The Constant BigNumber one.
+    private static final BigNumber ONE = new BigNumber("01", 1);
 
 
     /**
@@ -261,10 +265,10 @@ public class BigNumber {
         //other
         else{
             for (int i = 1; i < getListOfDigits().size() - 1; i++){
-                if (this.negate().getListOfDigits().get(i) > val.getListOfDigits().get(i)){
+                if (this.getListOfDigits().get(i) > val.getListOfDigits().get(i)){
                     return 1;
                 }
-                if (this.negate().getListOfDigits().get(i) < val.getListOfDigits().get(i)){
+                if (this.getListOfDigits().get(i) < val.getListOfDigits().get(i)){
                     return -1;
                 }
             }
@@ -379,12 +383,82 @@ public class BigNumber {
                 return value;
             }
         }
-        //If the signs of both numbers match, carry does not matter
-        else{
+        //Signs of the numbers match
+
+        //Check if the numbers are positive
+        //If yes, prepend the final remainder to the result, normalize and return
+        else if (this.sign() == 1){
+            result = remainder + result;
             value = new BigNumber(result, this.sign());
             value.normalize();
             return value;
         }
+        //Both numbers are negative
+        //Prepend the final remainder to the result, normalize and return the negated result
+        else {
+            result = remainder + result;
+            value = new BigNumber(result, 1);
+            value.normalize();
+            return value.negate();
+        }
+    }
+
+    /**
+     * Multiplies this BigNumber by the BigNumber val using Shift Add multiplication
+     * @param val BigNumber BigNumber to multiply by
+     * @return BigNumber The product of the multiplication
+     */
+    public BigNumber multiply(BigNumber val){
+        if (this.signum == 0 || val.signum == 0){
+            return ZERO;
+        }
+
+        BigNumber x;
+        BigNumber y;
+
+        //Ensure positive forms of numbers are being utilized
+        if (this.signum == 1){
+            x = this;
+        }
+        else x = this.negate();
+
+        if (val.signum == 1){
+            y = val;
+        }
+        else y = val.negate();
+
+        BigNumber product = ZERO;
+
+        StringBuilder step;
+
+        //tens relates to the tens place of this big number being multiplied against
+        //tens2 relates to the tens place of val being multiplied
+        //Both contribute the appropriate number of zero's to each step of the multiplication
+        int tens = 0;
+        int tens2;
+
+        //Perform the shift-add multiplication
+        for (int i = x.getListOfDigits().size() - 1; i >= 1; i--) {
+            tens2 = tens;
+            for (int j = y.getListOfDigits().size() - 1; j >= 1; j--) {
+                step = new StringBuilder();
+                step.append(x.getListOfDigits().get(i) * y.getListOfDigits().get(j));
+                for (int t = 0; t < tens2; t++){
+                    step.append(0);
+                }
+                product = product.add(new BigNumber(step.toString()));
+                tens2++;
+            }
+            tens++;
+        }
+
+        //If only one of the numbers used was negative, the result must be negative
+        if (this.signum != val.signum){
+            return product.negate();
+        }
+
+        //Otherwise the result is positive
+        else return product;
     }
 
     /**
@@ -396,6 +470,84 @@ public class BigNumber {
     public BigNumber subtract(BigNumber val){
         //Equivalent to x + (-y)
         return this.add(val.negate());
+    }
+
+    /**
+     * Divides this BigNumber by a second BigNumber and returns the quotient and remainder of the division
+     * @param val The Divisor for the division
+     * @return ArrayList containing the quotient in index 0 and remainder in index 1
+     * @throws IllegalArgumentException
+     * @author Tyler Robinson and Alex Tejada
+     */
+    public Pair divide(BigNumber val) throws RuntimeException{
+
+        //Checks that the divisor is not zero
+        if (val.equals(ZERO)){
+            throw new java.lang.RuntimeException("Divide by Zero");
+        }
+
+        //If the dividend is 0, return 0 for quotient and divisor for remainder
+        if (this.equals(ZERO)){
+            return new Pair(ZERO, val);
+        }
+
+        BigNumber x;
+        BigNumber y;
+
+        //Enusre use of positive numbers
+        if (this.signum == 1){
+            x = this;
+        }
+        else x = this.negate();
+
+        if (val.signum == 1){
+            y = val;
+        }
+        else y = val.negate();
+
+        //Result will hold the quotient as division occurs
+        StringBuilder result = new StringBuilder();
+
+        //Numerator constructs the number being divided at each step
+        StringBuilder numerator = new StringBuilder();
+
+        //Temp is what is being divided at each step
+        BigNumber temp = ZERO;
+
+        //Subs is the number of times the divisor goes into temp
+        int subs = 0;
+        int i;
+
+        //Perform long division
+        for (i = 1; i <= x.getListOfDigits().size() - 1; i++){
+            while (subs == 0){
+                numerator.append(x.getListOfDigits().get(i));
+                temp = new BigNumber(numerator.toString());
+                //Count how many times the divisor goes into the current remainder
+                while (temp.subtract(y).compareTo(ZERO) >= 0){
+                    temp = temp.subtract(y);
+                    subs++;
+                }
+                result.append(subs);
+                i++;
+
+                //If the end of the dividend is reached, cease division
+                if (i >= x.getListOfDigits().size()){
+                    break;
+                }
+                }
+            numerator = new StringBuilder();
+            numerator.append(temp.toString());
+            subs = 0;
+            i--;
+        }
+
+        BigNumber quotient = new BigNumber(result.toString(), (this.signum == val.signum) ? 1 : -1);
+        quotient.normalize();
+        BigNumber remainder = temp;
+
+
+        return new Pair(quotient, remainder);
     }
 
     /**
@@ -439,5 +591,20 @@ public class BigNumber {
         else sr.replace(0,1, "-");
 
         return sr.toString();
+    }
+}
+
+class Pair {
+    private BigNumber quotient;
+    private BigNumber remainder;
+    public Pair(BigNumber quotient, BigNumber remainder) {
+        this.quotient = quotient;
+        this.remainder = remainder;
+    }
+    public BigNumber getMod() {
+        return remainder;
+    }
+    public BigNumber getQuotient() {
+        return quotient;
     }
 }
