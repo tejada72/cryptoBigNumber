@@ -1,6 +1,7 @@
 package bigNumber;
 
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -21,6 +22,12 @@ public class BigNumber {
 
     //The Constant BigNumber one.
     private static final BigNumber ONE = new BigNumber("01", 1);
+
+    //The Constant BigNumber two.
+    private static  final BigNumber TWO = new BigNumber("02",1);
+
+    //The Constant BigNumber three.
+    private static  final BigNumber THREE = new BigNumber("03",1);
 
 
     /**
@@ -548,6 +555,148 @@ public class BigNumber {
 
 
         return new Pair(quotient, remainder);
+    }
+
+    public BigNumber factor() {
+        BigNumber x = TWO;
+        BigNumber y = TWO;
+        BigNumber d = ONE;
+        BigNumber a;
+
+        BigNumber count = ONE;
+        BigNumber num = new BigNumber("147");
+        while(count.compareTo(this) < 0 && d.equals(ONE)) {
+            if(count.equals(num)) {
+                System.out.println("");
+            }
+            x = g(x);
+            y = g(g(x));
+            a = x.subtract(y);
+            if(a.compareTo(ZERO) < 0) {
+                a = a.negate();
+            }
+            d = GCD(a,this);
+
+            count = count.add(ONE);
+        }
+
+        if(d == this) {
+            return this;
+        }
+
+        return d;
+    }
+
+    public BigNumber g(BigNumber input) {
+        BigNumber result = input.multiply(input);
+        result = result.add(ONE);
+        result = result.divide(this).getMod();
+        return result;
+    }
+
+    /*
+    public List<BigNumber> factor() {
+        ArrayList<BigNumber> result = new ArrayList<>();
+
+        BigNumber root = this.sqrt();
+        BigNumber numerator = this;
+        BigNumber denominator = TWO;
+        Pair divisionPair;
+
+        while(denominator.compareTo(root) < 0) {
+            divisionPair = numerator.divide(denominator);
+            if(divisionPair.getMod().equals(ZERO)) {
+                result.add(denominator);
+                result.add(divisionPair.getQuotient());
+                return result;
+            }
+            else {
+                if(denominator.equals(TWO))
+                    denominator = denominator.add(ONE);
+                else
+                    denominator = denominator.add(TWO);
+            }
+        }
+
+        return result;
+    }
+    */
+
+    public BigNumber GCD(BigNumber a, BigNumber b)
+    {
+        BigNumber remainder;
+        while (!b.equals(ZERO)) {
+            remainder = a.divide(b).getMod();
+            a = b;
+            b = remainder;
+        }
+
+        return a;
+
+        /*
+        // base case
+        if (a.equals(b))
+            return a;
+
+        // a is greater
+        if (a.compareTo(b) > 0)
+            return GCD(a.subtract(b), b);
+        return GCD(a, b.subtract(a));
+        */
+    }
+
+    /**
+     * Provides a list of all the prime factors for this BigNumber
+     *
+     * @return a list of prime factors of this BigNumber
+     */
+    /*
+    public List<BigNumber> factor() {
+        ArrayList<BigNumber> result = new ArrayList<>();
+        BigNumber numerator = this;
+        BigNumber denominator = TWO;
+        Pair divisionPair;
+        BigNumber halfOfThis = this.divide(TWO).getQuotient();
+
+        boolean searching = true;
+
+        while(searching && denominator.compareTo(halfOfThis) < 0) {
+            divisionPair = numerator.divide(denominator);
+            if(divisionPair.getMod().equals(ZERO)) {
+                result.add(denominator);
+                numerator = divisionPair.getQuotient();
+                if(numerator.equals(ONE))
+                    searching = false;
+            }
+            else {
+                if(denominator.equals(TWO))
+                    denominator = denominator.add(ONE);
+                else
+                    denominator = denominator.add(TWO);
+            }
+        }
+
+        return result;
+    }
+    */
+
+    public BigNumber sqrt() {
+
+        // square roots of 0 and 1 are trivial and
+        // y == 0 will cause a divide-by-zero exception
+        if (this.equals(ZERO)|| this.equals(ONE)) {
+            return this;
+        } // end if
+        BigNumber y;
+        // starting with y = x / 2 avoids magnitude issues with x squared
+        for (y = this.divide(TWO).getQuotient();
+             y.compareTo(this.divide(y).getQuotient()) > 0;
+             y = ((this.divide(y).getQuotient()).add(y)).divide(TWO).getQuotient());
+        if (this.compareTo(y.multiply(y)) == 0) {
+            return y;
+        } else {
+            return y.add(ONE);
+        }
     }
 
     /**
