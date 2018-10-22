@@ -422,7 +422,7 @@ public class BigNumber {
         BigNumber quotient;
         BigNumber remaider;
 
-        int count = 0;
+        long count = 0L;
 
         while(numerator.compareTo(denominator) > 0) {
             numerator = numerator.subtract(denominator);
