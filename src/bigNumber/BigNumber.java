@@ -1,6 +1,5 @@
 package bigNumber;
 
-
 import java.util.*;
 
 /**
@@ -380,23 +379,11 @@ public class BigNumber {
                 return value;
             }
         }
-        //Signs of the numbers match
-
-        //Check if the numbers are positive
-        //If yes, prepend the final remainder to the result, normalize and return
-        else if (this.sign() == 1){
-            result = remainder + result;
+        //If the signs of both numbers match, carry does not matter
+        else{
             value = new BigNumber(result, this.sign());
             value.normalize();
             return value;
-        }
-        //Both numbers are negative
-        //Prepend the final remainder to the result, normalize and return the negated result
-        else {
-            result = remainder + result;
-            value = new BigNumber(result, 1);
-            value.normalize();
-            return value.negate();
         }
     }
 
@@ -409,30 +396,6 @@ public class BigNumber {
     public BigNumber subtract(BigNumber val){
         //Equivalent to x + (-y)
         return this.add(val.negate());
-    }
-
-    /**
-     * Divide a BigNumber from this BigNumber
-     *
-     * @param denominator BigNumber to be use as the denominator
-     * @return Pair containing the quotient and remainder
-     */
-    public Pair divide(BigNumber denominator) {
-        BigNumber numerator = this;
-        BigNumber quotient;
-        BigNumber remaider;
-
-        long count = 0L;
-
-        while(numerator.compareTo(denominator) > 0) {
-            numerator = numerator.subtract(denominator);
-            count++;
-        }
-
-        quotient = new BigNumber("" + count);
-        remaider = numerator;
-
-        return new Pair(quotient,remaider);
     }
 
     /**
